@@ -133,7 +133,27 @@ H5P.GuidedTour = (function ($) {
      * @memberof H5P.GuidedTour
      */
     self.start = function () {
+      if (self.hasTourBeenSeen ()) {
+        return;
+      }
+
+      // Save
+      self.setTourSeen();
       tour.start();
+    };
+
+    self.setTourSeen = function () {
+      if (typeof(window.localStorage) !== "undefined" && options.id) {
+        window.localStorage.setItem(options.id + '-seen', true);
+      }
+    };
+
+    self.hasTourBeenSeen = function () {
+      var seen;
+      if (typeof(window.localStorage) !== "undefined" && options.id) {
+        seen = window.localStorage.getItem(options.id + '-seen');
+      }
+      return seen === undefined ? false : seen;
     };
   }
 
