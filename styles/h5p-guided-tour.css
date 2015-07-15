@@ -1,0 +1,26 @@
+/* Overriding max-width */
+.h5p.shepherd-element.shepherd-theme-arrows {
+  max-width: 400px;
+}
+
+/* Override main button background color */
+.shepherd-element.shepherd-theme-default .shepherd-content footer .shepherd-buttons li .shepherd-button-primary {
+  background: #1a73d9;
+}
+
+/* Override header */
+.h5p.shepherd-element.shepherd-theme-arrows.shepherd-has-title .shepherd-content header {
+  background: #eee;
+  color: #333;
+}
+
+/* No arrow please */
+.shepherd-element.shepherd-theme-arrows.h5p-guided-tour-step-no-arrow .shepherd-content:before {
+  display: none;
+}
+
+/* More contrast, please */
+.h5p.shepherd-element.shepherd-theme-arrows .shepherd-content {
+  -webkit-filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.6));
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.6));
+}

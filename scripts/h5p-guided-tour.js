@@ -33,6 +33,7 @@ H5P.GuidedTour = (function ($) {
    */
   function Step(options, stepType, tour, highlight) {
     var self = this;
+    options.classes = options.classes || 'h5p shepherd-theme-arrows';
 
     // ************
     // First button
@@ -61,8 +62,9 @@ H5P.GuidedTour = (function ($) {
     if (stepType === STEP_TYPES.LAST) {
       // Last step - finish button
       options.buttons.push({
-        text: 'Finish',
-        action: tour.complete
+        text: 'Done',
+        action: tour.complete,
+        classes: 'shepherd-button-primary'
       });
     }
     else {
@@ -70,7 +72,7 @@ H5P.GuidedTour = (function ($) {
       options.buttons.push({
         text: 'Next',
         action: tour.next,
-        classes: 'shepherd-button-example-primary'
+        classes: 'shepherd-button-primary'
       });
     }
 
@@ -86,6 +88,10 @@ H5P.GuidedTour = (function ($) {
           }
         }
       }
+    }
+
+    if (options.noArrow) {
+      options.classes += ' h5p-guided-tour-step-no-arrow';
     }
 
     /**
@@ -109,14 +115,13 @@ H5P.GuidedTour = (function ($) {
 
     options = $.extend({}, {
       highlight: {
-        background: '#3288e6',
+        background: '#1a73d9',
         color: '#fff'
       }
     }, options);
 
     var tour = new H5P.Shepherd.Tour({
       defaults: {
-        classes: 'h5p shepherd-theme-arrows',
         showCancelLink: true
       }
     });
