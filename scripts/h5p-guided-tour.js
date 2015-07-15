@@ -37,6 +37,7 @@ H5P.GuidedTour = (function ($) {
     // ************
     // First button
     // ************
+    options.buttons = [];
     if (stepType == STEP_TYPES.FIRST) {
       // First step - exit button
       options.buttons.push({
