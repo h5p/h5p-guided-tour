@@ -81,19 +81,29 @@ H5P.GuidedTour = (function ($) {
       });
     }
 
-    if (options.highlightElement) {
-      var $element;
-      options.when = {
-        show: function () {
-          $element = $element || $(options.attachTo.element)
+    var $element;
+    options.when = {
+      show: function () {
+        if (options.highlightElement) {
+          $element = $element || $(options.attachTo.element);
           $element.css(highlight);
-        },
-        hide: function () {
-          $element = $element || $(options.attachTo.element)
+        }
+        // Stop propagating click events, so that body don't get them
+        $(this.el).on('click.guided-tour', function () {
+          return false;
+        });
+      },
+      hide: function () {
+        if (options.highlightElement) {
+          $element = $element || $(options.attachTo.element);
           for(var property in highlight) {
             $element.css(property, '');
           }
         }
+        var el = this.el;
+        setTimeout(function () {
+          $(el).off('click.guided-tour');
+        }, 0)
       }
     }
 
@@ -135,33 +145,78 @@ H5P.GuidedTour = (function ($) {
 
     for (var i = 0, numSteps = steps.length; i < steps.length; i++ ) {
       var type = i === 0 ? STEP_TYPES.FIRST : (i+1 === numSteps ? STEP_TYPES.LAST : STEP_TYPES.IN_BETWEEN);
-      var step = new Step(steps[i], type, tour, options.highlight);
-      tour.addStep(step.getOptions());
+      tour.addStep((new Step(steps[i], type, tour, options.highlight)).getOptions());
     }
 
     /**
      * Start the guided tour
      * @method start
      * @memberof H5P.GuidedTour
+     * @return {boolean} Shown or not
      */
     self.start = function (force) {
       force = force || false;
 
       if (!force && self.hasTourBeenSeen ()) {
-        return;
+        return false;
       }
 
-      // Save
+      // Remember the user has seen this guide
       self.setTourSeen();
+
+      $('body').off('click.guided-tour');
+      // Listen for click-events on body, so we can hide the guide:
+      $('body').on('click.guided-tour', function (event) {
+        tour.hide();
+      });
+
+      tour.on('complete', function () {
+        $('body').off('.guided-tour');
+      });
+
       tour.start();
+      return true;
     };
 
+    /**
+     * Hides guide
+     * @method hide
+     * @memberof H5P.GuidedTour
+     */
+    self.hide = function () {
+      tour.hide();
+    };
+
+    /**
+     * Tells if tour is open or not
+     * @method isOpen
+     * @return {Boolean}
+     * @memberof H5P.GuidedTour
+     */
+    self.isOpen = function () {
+      var currentStep = tour.getCurrentStep();
+      return currentStep !== undefined && currentStep.isOpen();
+    };
+
+    /**
+     * Mark this tour as seen. This is persisted using localstorage. If not present, nothing is persisted.
+     *
+     * @method setTourSeen
+     * @memberof H5P.GuidedTour
+     */
     self.setTourSeen = function () {
       if (typeof(window.localStorage) !== "undefined" && options.id) {
         window.localStorage.setItem(options.id + '-seen', true);
       }
     };
 
+    /**
+     * Check if this tour has been seen by user. Reads value from localstorage
+     * 
+     * @method hasTourBeenSeen
+     * @memberof H5P.GuidedTour
+     * @return {Boolean}
+     */
     self.hasTourBeenSeen = function () {
       var seen;
       if (typeof(window.localStorage) !== "undefined" && options.id) {
