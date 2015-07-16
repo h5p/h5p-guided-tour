@@ -1,6 +1,7 @@
 /* Overriding max-width */
 .h5p.shepherd-element.shepherd-theme-arrows {
   max-width: 400px;
+  font-size: 15px;
 }
 
 /* Override main button background color */
@@ -23,4 +24,9 @@
 .h5p.shepherd-element.shepherd-theme-arrows .shepherd-content {
   -webkit-filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.6));
   filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.6));
+}
+
+/* A little less paddings */
+.h5p.shepherd-element.shepherd-theme-arrows .shepherd-content .shepherd-text {
+  padding: .5em 1em;
 }

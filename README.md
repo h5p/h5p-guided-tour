@@ -15,7 +15,7 @@ var tour = new H5P.GuidedTour([
   {
     text: '<p>This guide tours you through the most important features of the Interactive Video editor</p><p>Press EXIT to skip this tour</p><p>Start this guide by pressing the Tour button in the top right corner</p>',
     attachTo: {element: '.field.wizard .h5peditor-label', on: 'bottom'},
-    classes: 'shepherd-theme-default shepherd-element-attached-center',
+    noArrow: true
   },
   {
     title: 'Adding video',
@@ -42,9 +42,10 @@ The constructor takes two parameters, where the first one is an array of steps, 
   - The first step will get a exit and next button
   - The last step will get a back and finish button
   - The steps in between will a get back and next button
-* step.highlightElement is only relevant for H5P.GuidedTour. If this value is true, it will highlight the element the step is attached to according to options.highlight (second parameter)
+- step.highlightElement is only relevant for H5P.GuidedTour. If this value is true, it will highlight the element the step is attached to according to options.highlight (second parameter)
+- step.noArrow is only relevant for H5P.GuidedTour. If this value is true, the arrow pointing to the element will not be visible.
 
-The H5P.GuidedTour.start() function should be self-explanatory (it starts the guided tour)
+H5P.GuidedTour.start() starts the guided tour. It takes one optional boolean parameter (force). If this is true, the guide will be shown even if it has been shown before.
 
 ## H5P library dependencies
 

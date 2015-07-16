@@ -33,7 +33,8 @@ H5P.GuidedTour = (function ($) {
    */
   function Step(options, stepType, tour, highlight) {
     var self = this;
-    options.classes = options.classes || 'h5p shepherd-theme-arrows';
+    options.classes = options.classes || '';
+    options.classes += ' h5p shepherd-theme-arrows';
 
     // ************
     // First button
@@ -46,6 +47,8 @@ H5P.GuidedTour = (function ($) {
         classes: 'shepherd-button-secondary',
         action: tour.cancel
       });
+
+      options.classes += ' first';
     }
     else {
       // All others - back button
@@ -66,6 +69,8 @@ H5P.GuidedTour = (function ($) {
         action: tour.complete,
         classes: 'shepherd-button-primary'
       });
+
+      options.classes += ' last';
     }
     else {
       // All others - next button
@@ -77,12 +82,14 @@ H5P.GuidedTour = (function ($) {
     }
 
     if (options.highlightElement) {
-      var $element = $(options.attachTo.element);
+      var $element;
       options.when = {
         show: function () {
+          $element = $element || $(options.attachTo.element)
           $element.css(highlight);
         },
         hide: function () {
+          $element = $element || $(options.attachTo.element)
           for(var property in highlight) {
             $element.css(property, '');
           }
@@ -115,7 +122,7 @@ H5P.GuidedTour = (function ($) {
 
     options = $.extend({}, {
       highlight: {
-        background: '#1a73d9',
+        background: '#3288e6',
         color: '#fff'
       }
     }, options);
@@ -137,8 +144,10 @@ H5P.GuidedTour = (function ($) {
      * @method start
      * @memberof H5P.GuidedTour
      */
-    self.start = function () {
-      if (self.hasTourBeenSeen ()) {
+    self.start = function (force) {
+      force = force || false;
+
+      if (!force && self.hasTourBeenSeen ()) {
         return;
       }
 
