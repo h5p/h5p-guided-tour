@@ -89,9 +89,12 @@ H5P.GuidedTour = (function ($) {
           $element.css(highlight);
         }
         // Stop propagating click events, so that body don't get them
-        $(this.el).on('click.guided-tour', function () {
-          return false;
-        });
+        var el = this.el;
+        setTimeout(function() {
+          $(el).on('click.guided-tour', function () {
+            return false;
+          });
+        }, 0);
       },
       hide: function () {
         if (options.highlightElement) {
@@ -103,9 +106,9 @@ H5P.GuidedTour = (function ($) {
         var el = this.el;
         setTimeout(function () {
           $(el).off('click.guided-tour');
-        }, 0)
+        }, 0);
       }
-    }
+    };
 
     if (options.noArrow) {
       options.classes += ' h5p-guided-tour-step-no-arrow';
@@ -165,6 +168,9 @@ H5P.GuidedTour = (function ($) {
       self.setTourSeen();
 
       $('body').off('click.guided-tour');
+
+      tour.start();
+
       // Listen for click-events on body, so we can hide the guide:
       $('body').on('click.guided-tour', function (event) {
         tour.hide();
@@ -173,8 +179,6 @@ H5P.GuidedTour = (function ($) {
       tour.on('complete', function () {
         $('body').off('.guided-tour');
       });
-
-      tour.start();
       return true;
     };
 
@@ -212,7 +216,7 @@ H5P.GuidedTour = (function ($) {
 
     /**
      * Check if this tour has been seen by user. Reads value from localstorage
-     * 
+     *
      * @method hasTourBeenSeen
      * @memberof H5P.GuidedTour
      * @return {Boolean}
