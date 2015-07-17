@@ -124,6 +124,41 @@ H5P.GuidedTour = (function ($) {
     };
   }
 
+  // Factory for creating storage instance
+  var storage = (function () {
+    // Default implementation if no storage available:
+    var instance = {
+      get: function () {
+        return false;
+      },
+      set: function () {}
+    };
+    // H5P content user data
+    /*if (typeof(H5P.setUserData) === 'function') {
+      instance = {
+        get: function (key) {
+          return H5P.getUserData(key);
+        },
+        set: function (key, value) {
+          H5P.setUserData(key, value);
+        }
+      };
+    }*/
+    // Localstorage
+    if (typeof(window.localStorage) !== "undefined") {
+      instance = {
+        get: function (key) {
+          return window.localStorage.getItem(key);
+        },
+        set: function (key, value) {
+          window.localStorage.setItem(key, value);
+        }
+      };
+    }
+
+    return instance;
+  })();
+
   /**
    * Main class
    * @class H5P.GuidedTour
@@ -209,9 +244,7 @@ H5P.GuidedTour = (function ($) {
      * @memberof H5P.GuidedTour
      */
     self.setTourSeen = function () {
-      if (typeof(window.localStorage) !== "undefined" && options.id) {
-        window.localStorage.setItem(options.id + '-seen', true);
-      }
+      storage.set(options.id + '-seen', true);
     };
 
     /**
@@ -222,10 +255,7 @@ H5P.GuidedTour = (function ($) {
      * @return {Boolean}
      */
     self.hasTourBeenSeen = function () {
-      var seen;
-      if (typeof(window.localStorage) !== "undefined" && options.id) {
-        seen = window.localStorage.getItem(options.id + '-seen');
-      }
+      var seen = storage.get(options.id + '-seen');
       return seen === undefined ? false : seen;
     };
   }
