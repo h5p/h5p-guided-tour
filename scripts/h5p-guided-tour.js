@@ -126,36 +126,45 @@ H5P.GuidedTour = (function ($) {
 
   // Factory for creating storage instance
   var storage = (function () {
-    // Default implementation if no storage available:
+    var fallback;
     var instance = {
-      get: function () {
-        return false;
-      },
-      set: function () {}
-    };
-    // H5P content user data
-    /*if (typeof(H5P.setUserData) === 'function') {
-      instance = {
-        get: function (key) {
-          return H5P.getUserData(key);
-        },
-        set: function (key, value) {
-          H5P.setUserData(key, value);
+      get: function (key, next) {
+        if (fallback) {
+          if (window.localStorage !== undefined) {
+            // Use localStorage
+            next(null, window.localStorage.getItem(key));
+          }
+          return;
         }
-      };
-    }*/
-    // Localstorage
-    if (typeof(window.localStorage) !== "undefined") {
-      instance = {
-        get: function (key) {
-          return window.localStorage.getItem(key);
-        },
-        set: function (key, value) {
-          window.localStorage.setItem(key, value);
-        }
-      };
-    }
 
+        try {
+          H5P.getUserData(0, key, next);
+        }
+        catch (err) {
+          // Not supported try fallback
+          fallback = true;
+          instance.get(key, next);
+        }
+      },
+      set: function (key, value) {
+        if (fallback) {
+          if (window.localStorage !== undefined) {
+            // Use localStorage
+            window.localStorage.setItem(key, value);
+          }
+          return;
+        }
+
+        try {
+          H5P.setUserData(0, key, value);
+        }
+        catch (err) {
+          // Not supported try fallback
+          fallback = true;
+          instance.set(key, value);
+        }
+      },
+    };
     return instance;
   })();
 
@@ -192,29 +201,33 @@ H5P.GuidedTour = (function ($) {
      * @memberof H5P.GuidedTour
      * @return {boolean} Shown or not
      */
-    self.start = function (force) {
-      force = force || false;
+    self.start = function (force, started) {
+      var start = function () {
+        // Remember the user has seen this guide
+        self.setTourSeen();
 
-      if (!force && self.hasTourBeenSeen ()) {
-        return false;
+        $('body').off('click.guided-tour');
+
+        tour.start();
+
+        // Listen for click-events on body, so we can hide the guide:
+        $('body').on('click.guided-tour', function (event) {
+          tour.hide();
+        });
+
+        tour.on('complete', function () {
+          $('body').off('.guided-tour');
+        });
+
+        started();
+      };
+
+      if (force) {
+        start();
       }
-
-      // Remember the user has seen this guide
-      self.setTourSeen();
-
-      $('body').off('click.guided-tour');
-
-      tour.start();
-
-      // Listen for click-events on body, so we can hide the guide:
-      $('body').on('click.guided-tour', function (event) {
-        tour.hide();
-      });
-
-      tour.on('complete', function () {
-        $('body').off('.guided-tour');
-      });
-      return true;
+      else {
+        self.ifTourHasNotBeenSeen(start);
+      }
     };
 
     /**
@@ -254,9 +267,12 @@ H5P.GuidedTour = (function ($) {
      * @memberof H5P.GuidedTour
      * @return {Boolean}
      */
-    self.hasTourBeenSeen = function () {
-      var seen = storage.get(options.id + '-seen');
-      return seen === undefined ? false : seen;
+    self.ifTourHasNotBeenSeen = function (action) {
+      storage.get(options.id + '-seen', function (err, value) {
+        if (!err && value !== true && value !== 'true') {
+          action();
+        }
+      });
     };
   }
 
