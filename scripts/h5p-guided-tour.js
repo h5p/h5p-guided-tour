@@ -205,7 +205,10 @@ H5P.GuidedTour = (function ($) {
 
         $('body').off('click.guided-tour');
 
-        tour.start();
+        try {
+          tour.start();
+        }
+        catch (err) {} // Suppress error messages / Missing tour elements
 
         // Listen for click-events on body, so we can hide the guide:
         $('body').on('click.guided-tour', function (event) {
