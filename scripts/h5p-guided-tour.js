@@ -126,43 +126,40 @@ H5P.GuidedTour = (function ($) {
 
   // Factory for creating storage instance
   var storage = (function () {
-    var fallback;
     var instance = {
       get: function (key, next) {
-        if (fallback) {
-          if (window.localStorage !== undefined) {
-            // Use localStorage
-            next(null, window.localStorage.getItem(key));
-          }
-          return;
+        var value;
+
+        // Get value from browser storage
+        if (window.localStorage !== undefined) {
+          value = !!window.localStorage.getItem(key);
         }
 
+        // Try to get a better value from user data storage
         try {
-          H5P.getUserData(0, key, next);
+          H5P.getUserData(0, key, function (err, result) {
+            if (!err) {
+              value = result;
+              next(value);
+            }
+          });
         }
         catch (err) {
-          // Not supported try fallback
-          fallback = true;
-          instance.get(key, next);
+          next(value);
         }
       },
       set: function (key, value) {
-        if (fallback) {
-          if (window.localStorage !== undefined) {
-            // Use localStorage
-            window.localStorage.setItem(key, value);
-          }
-          return;
+
+        // Store in browser
+        if (window.localStorage !== undefined) {
+          window.localStorage.setItem(key, value);
         }
 
+        // Try to store in user data storage
         try {
           H5P.setUserData(0, key, value);
         }
-        catch (err) {
-          // Not supported try fallback
-          fallback = true;
-          instance.set(key, value);
-        }
+        catch (err) {}
       },
     };
     return instance;
@@ -268,8 +265,8 @@ H5P.GuidedTour = (function ($) {
      * @return {Boolean}
      */
     self.ifTourHasNotBeenSeen = function (action) {
-      storage.get(options.id + '-seen', function (err, value) {
-        if (!err && value !== true && value !== 'true') {
+      storage.get(options.id + '-seen', function (value) {
+        if (value !== true) {
           action();
         }
       });
