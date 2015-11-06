@@ -140,8 +140,8 @@ H5P.GuidedTour = (function ($) {
           H5P.getUserData(0, key, function (err, result) {
             if (!err) {
               value = result;
-              next(value);
             }
+            next(value);
           });
         }
         catch (err) {
