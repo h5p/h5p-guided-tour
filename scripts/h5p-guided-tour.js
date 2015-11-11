@@ -17,7 +17,8 @@ H5P.GuidedTour = (function ($) {
   var STEP_TYPES = {
     FIRST: 0,
     IN_BETWEEN: 1,
-    LAST: 2
+    LAST: 2,
+    SINGLE: 3
   };
 
   /**
@@ -29,9 +30,10 @@ H5P.GuidedTour = (function ($) {
    * @param  {number} stepType
    * @param  {H5P.Sheperd.Tour} tour
    * @param  {Object} highlight Object containing css-properties that will be
+   * @param  {Object} labels Labels for buttons
    * applied to current guided element (used if highlightElement === true)
    */
-  function Step(options, stepType, tour, highlight) {
+  function Step(options, stepType, tour, highlight, labels) {
     var self = this;
     options.classes = options.classes || '';
     options.classes += ' h5p shepherd-theme-arrows';
@@ -40,20 +42,20 @@ H5P.GuidedTour = (function ($) {
     // First button
     // ************
     options.buttons = [];
-    if (stepType == STEP_TYPES.FIRST) {
+    if (stepType === STEP_TYPES.FIRST) {
       // First step - exit button
       options.buttons.push({
-        text: 'Exit',
+        text: labels.exit,
         classes: 'shepherd-button-secondary',
         action: tour.cancel
       });
 
       options.classes += ' first';
     }
-    else {
+    else if (stepType !== STEP_TYPES.SINGLE){
       // All others - back button
       options.buttons.push({
-        text: 'Back',
+        text: labels.back,
         classes: 'shepherd-button-secondary',
         action: tour.back
       });
@@ -62,10 +64,10 @@ H5P.GuidedTour = (function ($) {
     // *************
     // Second button
     // *************
-    if (stepType === STEP_TYPES.LAST) {
+    if (stepType === STEP_TYPES.LAST || stepType === STEP_TYPES.SINGLE) {
       // Last step - finish button
       options.buttons.push({
-        text: 'Done',
+        text: labels.done,
         action: tour.complete,
         classes: 'shepherd-button-primary'
       });
@@ -75,7 +77,7 @@ H5P.GuidedTour = (function ($) {
     else {
       // All others - next button
       options.buttons.push({
-        text: 'Next',
+        text: labels.next,
         action: tour.next,
         classes: 'shepherd-button-primary'
       });
@@ -178,6 +180,12 @@ H5P.GuidedTour = (function ($) {
       highlight: {
         background: '#3288e6',
         color: '#fff'
+      },
+      labels: {
+        exit: 'Exit',
+        done: 'Done',
+        back: 'Back',
+        next: 'Next'
       }
     }, options);
 
@@ -188,8 +196,8 @@ H5P.GuidedTour = (function ($) {
     });
 
     for (var i = 0, numSteps = steps.length; i < steps.length; i++ ) {
-      var type = i === 0 ? STEP_TYPES.FIRST : (i+1 === numSteps ? STEP_TYPES.LAST : STEP_TYPES.IN_BETWEEN);
-      tour.addStep((new Step(steps[i], type, tour, options.highlight)).getOptions());
+      var type = numSteps === 1 ? STEP_TYPES.SINGLE : (i === 0 ? STEP_TYPES.FIRST : (i+1 === numSteps ? STEP_TYPES.LAST : STEP_TYPES.IN_BETWEEN));
+      tour.addStep((new Step(steps[i], type, tour, options.highlight, options.labels)).getOptions());
     }
 
     /**
