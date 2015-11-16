@@ -10,6 +10,13 @@
   background: #1a73d9;
 }
 
+.shepherd-element .shepherd-content footer .shepherd-buttons li .shepherd-button-primary:hover {
+  background: #1356a3 !important;
+}
+.shepherd-element .shepherd-content footer .shepherd-buttons li .shepherd-button-secondary:hover {
+  background: #ddd !important;
+}
+
 /* Override header */
 .h5p.shepherd-element.shepherd-theme-arrows.shepherd-has-title .shepherd-content header {
   background: #eee;
