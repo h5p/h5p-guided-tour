@@ -207,6 +207,12 @@ H5P.GuidedTour = (function ($) {
      * @return {boolean} Shown or not
      */
     self.start = function (force, started) {
+
+      // Check if first element in tour exists:
+      if(steps.length !== 0 && steps[0].attachTo && $(steps[0].attachTo.element).length === 0) {
+        return;
+      }
+
       var start = function () {
         // Remember the user has seen this guide
         self.setTourSeen();
