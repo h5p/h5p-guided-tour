@@ -3,16 +3,20 @@
   "description": "Library for guiding users through an H5P. May be usable both by editors and standard H5P libraries",
   "majorVersion": 1,
   "minorVersion": 0,
-  "patchVersion": 0,
+  "patchVersion": 1,
   "runnable": 0,
   "author": "Joubel AS (fnoks)",
   "license": "MIT",
   "machineName": "H5P.GuidedTour",
   "preloadedJs": [
-    {"path": "scripts/h5p-guided-tour.js"}
+    {
+      "path": "scripts/h5p-guided-tour.js"
+    }
   ],
   "preloadedCss": [
-    {"path": "styles/h5p-guided-tour.css"}
+    {
+      "path": "styles/h5p-guided-tour.css"
+    }
   ],
   "preloadedDependencies": [
     {
