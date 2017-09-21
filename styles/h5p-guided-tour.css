@@ -2,7 +2,7 @@
 .h5p.shepherd-element.shepherd-theme-arrows {
   max-width: 400px;
   font-size: 15px;
-  z-index: 1001;
+  z-index: 1;
 }
 
 /* Override main button background color */
