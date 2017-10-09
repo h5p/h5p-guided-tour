@@ -225,12 +225,12 @@ H5P.GuidedTour = (function ($) {
         catch (err) {} // Suppress error messages / Missing tour elements
 
         // Listen for click-events on body, so we can hide the guide:
-        $('body').on('click.guided-tour', function (event) {
+        $('body').on('click.guided-tour', function () {
           tour.hide();
         });
 
         tour.on('complete', function () {
-          $('body').off('.guided-tour');
+          $('body').off('click.guided-tour');
         });
 
         started();
@@ -251,6 +251,18 @@ H5P.GuidedTour = (function ($) {
      */
     self.hide = function () {
       tour.hide();
+    };
+
+    /**
+     * Destroys tour, i.e removes DOM elements and event listeners
+     */
+    self.destroy = function () {
+      self.hide();
+      $('body').off('click.guided-tour');
+      for (var i = 0; i < tour.steps.length; i++) {
+        var step = tour.steps[i];
+        step && step.destroy();
+      }
     };
 
     /**
