@@ -161,7 +161,7 @@ H5P.GuidedTour = (function ($) {
         try {
           H5P.setUserData(0, key, value);
         }
-        catch (err) {}
+        catch (err) { /* Suppress error messages */ }
       },
     };
     return instance;
@@ -222,7 +222,7 @@ H5P.GuidedTour = (function ($) {
         try {
           tour.start();
         }
-        catch (err) {} // Suppress error messages / Missing tour elements
+        catch (err) { /* Suppress error messages / Missing tour elements */ }
 
         // Listen for click-events on body, so we can hide the guide:
         $('body').on('click.guided-tour', function () {
