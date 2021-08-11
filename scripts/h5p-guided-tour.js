@@ -52,7 +52,7 @@ H5P.GuidedTour = (function ($) {
 
       options.classes += ' first';
     }
-    else if (stepType !== STEP_TYPES.SINGLE){
+    else if (stepType !== STEP_TYPES.SINGLE) {
       // All others - back button
       options.buttons.push({
         text: labels.back,
@@ -92,7 +92,7 @@ H5P.GuidedTour = (function ($) {
         }
         // Stop propagating click events, so that body don't get them
         var el = this.el;
-        setTimeout(function() {
+        setTimeout(function () {
           $(el).on('click.guided-tour', function () {
             return false;
           });
@@ -101,7 +101,7 @@ H5P.GuidedTour = (function ($) {
       hide: function () {
         if (options.highlightElement) {
           $element = $element || $(options.attachTo.element);
-          for(var property in highlight) {
+          for (var property in highlight) {
             $element.css(property, '');
           }
         }
@@ -126,47 +126,49 @@ H5P.GuidedTour = (function ($) {
     };
   }
 
-  // Factory for creating storage instance
-  var storage = (function () {
-    var instance = {
-      get: function (key, next) {
-        var value;
+  // Reference to localStorage if present. If not, just a dummy object:
+  const localStorage = window.localStorage || {
+    setItem: function (key, value) {},
+    getItem: function (key) {
+      return null;
+    }
+  };
 
-        // Get value from browser storage
-        if (window.localStorage !== undefined) {
-          value = !!window.localStorage.getItem(key);
-        }
+  // Object responsible for storing/getting which guides have been seen
+  const storage = {
+    get: function (key, next) {
+      // Get value from browser storage
+      if (localStorage.getItem(key) !== null) {
+        return next(true);
+      }
 
-        // Try to get a better value from user data storage
-        try {
-          H5P.getUserData(0, key, function (err, result) {
-            if (!err) {
-              value = result;
-            }
-            next(value);
-          });
-        }
-        catch (err) {
-          next(value);
-        }
-      },
-      set: function (key, value) {
+      // If not found in localstorage, try to get a value from user data storage
+      try {
+        H5P.getUserData(0, key, function (err, result) {
+          if (!err) {
+            // Cache it in localStorage:
+            localStorage.setItem(key, result);
+            return next(result);
+          }
+          next(false);
+        });
+      }
+      catch (err) {
+        next(false);
+      }
+    },
+    set: function (key, value) {
+      // Store in browser
+      localStorage.setItem(key, value);
 
-        // Store in browser
-        if (window.localStorage !== undefined) {
-          window.localStorage.setItem(key, value);
-        }
-
-        // Try to store in user data storage
-        try {
-          H5P.setUserData(0, key, value);
-        }
-        catch (err) { /* Suppress error messages */ }
-      },
-    };
-    return instance;
-  })();
-
+      // Try to store in user data storage
+      try {
+        H5P.setUserData(0, key, value);
+      }
+      catch (err) { /* Suppress error messages */ }
+    },
+  };
+  
   /**
    * Main class
    * @class H5P.GuidedTour
@@ -209,7 +211,7 @@ H5P.GuidedTour = (function ($) {
     self.start = function (force, started) {
 
       // Check if first element in tour exists:
-      if(steps.length !== 0 && steps[0].attachTo && $(steps[0].attachTo.element).length === 0) {
+      if (steps.length !== 0 && steps[0].attachTo && $(steps[0].attachTo.element).length === 0) {
         return;
       }
 
