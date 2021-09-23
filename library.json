@@ -3,7 +3,7 @@
   "description": "Library for guiding users through an H5P. May be usable both by editors and standard H5P libraries",
   "majorVersion": 1,
   "minorVersion": 0,
-  "patchVersion": 5,
+  "patchVersion": 6,
   "runnable": 0,
   "author": "Joubel",
   "license": "MIT",
